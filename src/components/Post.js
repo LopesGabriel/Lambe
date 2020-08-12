@@ -5,12 +5,14 @@ import {
     Image,
     Dimensions
 } from 'react-native'
+import Author from './Author'
 
 class Post extends Component {
     render() {
         return (
             <View style={styles.container}>
                 <Image source={this.props.image} style={styles.image} />
+                <Author email='lopesgabriel0199@gmail.com' nickname='Gabriel de Oliveira Lopes' />
             </View>
         )
     }
