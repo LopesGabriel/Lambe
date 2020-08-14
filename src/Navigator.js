@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import { NavigationContainer } from '@react-navigation/native'
 import { createSwitchNavigator } from '@react-navigation/compat'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
@@ -31,23 +32,33 @@ const loginOrProfileRouter = createSwitchNavigator({
     initialRouteName: 'Auth'
 })
 
-export default function Navigator() {
-    return (
-        <NavigationContainer>
-            <Tab.Navigator
-                tabBarOptions={{ showLabel: false }} initialRouteName="Feed">
-                <Tab.Screen
-                    name="Feed" component={Feed} options={{ title: 'Feed', tabBarBadge: 2, tabBarIcon: ({ color }) =>
-                    <Icon name='home' size={30} color={color} /> }} />
-                <Tab.Screen
-                    name="AddPhoto" component={AddPhoto} 
-                    options={{ title: 'Add Picture', tabBarIcon: ({ color }) =>
-                        <Icon name='camera' size={30} color={color} /> }} />
-                <Tab.Screen
-                    name="Profile" component={loginOrProfileRouter} 
-                    options={{ title: 'Profile', tabBarIcon: ({ color }) =>
-                        <Icon name='user' size={30} color={color} /> }} />
-            </Tab.Navigator>
-        </NavigationContainer>
-    )
+class Navigator extends Component {
+    render() {
+        return (
+            <NavigationContainer>
+                <Tab.Navigator
+                    tabBarOptions={{ showLabel: false }} initialRouteName="Feed">
+                    <Tab.Screen
+                        name="Feed" component={Feed} options={{ title: 'Feed', tabBarBadge: this.props.posts.length, tabBarIcon: ({ color }) =>
+                        <Icon name='home' size={30} color={color} /> }} />
+                    <Tab.Screen
+                        name="AddPhoto" component={AddPhoto} 
+                        options={{ title: 'Add Picture', tabBarIcon: ({ color }) =>
+                            <Icon name='camera' size={30} color={color} /> }} />
+                    <Tab.Screen
+                        name="Profile" component={loginOrProfileRouter} 
+                        options={{ title: 'Profile', tabBarIcon: ({ color }) =>
+                            <Icon name='user' size={30} color={color} /> }} />
+                </Tab.Navigator>
+            </NavigationContainer>
+        )
+    }
 }
+
+const mapStateToProps = ({ posts }) => {
+    return {
+        posts: posts.posts
+    }
+}
+
+export default connect(mapStateToProps)(Navigator)
