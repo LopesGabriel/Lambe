@@ -31,6 +31,11 @@ class AddPhoto extends Component {
 
         ImagePicker.showImagePicker({
             title: 'Escolha a imagem',
+            cameraType: 'front',
+            chooseFromLibraryButtonTitle: 'Buscar no dispositivo',
+            chooseWhichLibraryTitle: 'Escolha a biblioteca',
+            cancelButtonTitle: 'Cancelar',
+            takePhotoButtonTitle: 'Tirar foto',
             maxHeight: 600,
             maxWidth: 800
         }, res => {
