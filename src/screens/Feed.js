@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { StyleSheet, FlatList, View, Text } from 'react-native'
+import { StyleSheet, FlatList, View, Text, ActivityIndicator } from 'react-native'
 import Header from '../components/Header'
 import Post from '../components/Post'
 import { fetchPosts } from '../store/actions/posts'
@@ -21,10 +21,17 @@ class Feed extends Component {
                 <Text>Não existem postagens ainda...</Text>
                 <Text>Para adicionar faça login e publique uma imagem!</Text>
               </View>
+        
+        const body = this.props.isLoading
+            ? <View style={{...styles.container, backgroundColor: '#FFF'}}>
+                <Text>Carregando Feed...</Text>
+                <ActivityIndicator size="large" color="#0000ff" />
+              </View>
+            : feedBody
         return (
             <View style={styles.container}>
                 <Header />
-                {feedBody}
+                {body}
             </View>
         )
     }
@@ -39,9 +46,10 @@ const styles = StyleSheet.create({
     }
 })
 
-const mapStateToProps = ({ posts }) => {
+const mapStateToProps = ({ posts, feed }) => {
     return {
-        posts: posts.posts
+        posts: posts.posts,
+        isLoading: feed.isLoading
     }
 }
 

@@ -1,8 +1,10 @@
-import { SET_POSTS, ADD_COMMENT } from './actionTypes'
+import { SET_POSTS, ADD_COMMENT, CREATING_POST, POST_CREATED } from './actionTypes'
+import { loadingFeed, feedLoaded } from './feed'
 import axios from 'axios'
 
 export const addPost = post => {
     return dispatch => {
+        dispatch(creatingPost())
         axios({
             url: 'uploadImage',
             baseURL: 'https://us-central1-gabriel-homolog.cloudfunctions.net/',
@@ -17,6 +19,10 @@ export const addPost = post => {
                 axios.post('/posts.json', { ...post })
                     .catch(err => console.error(err))
                     .then(res => console.log(res.data))
+            })
+            .finally(() => {
+                dispatch(fetchPosts())
+                dispatch(postCreated())
             })
     }
 }
@@ -37,6 +43,7 @@ export const setPosts = posts => {
 
 export const fetchPosts = () => {
     return dispatch => {
+        dispatch(loadingFeed())
         axios.get('/posts.json')
             .catch(err => console.error(err))
             .then(res => {
@@ -48,7 +55,22 @@ export const fetchPosts = () => {
                         id: key
                     })
                 }
-                dispatch(setPosts(posts))
+                dispatch(setPosts(posts.reverse()))
             })
+            .finally(() => {
+                dispatch(feedLoaded())
+            })
+    }
+}
+
+export const creatingPost = () => {
+    return {
+        type: CREATING_POST
+    }
+}
+
+export const postCreated = () => {
+    return {
+        type: POST_CREATED
     }
 }
