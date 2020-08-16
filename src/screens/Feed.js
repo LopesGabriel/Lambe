@@ -23,7 +23,7 @@ class Feed extends Component {
               </View>
         
         const body = this.props.isLoading
-            ? <View style={{...styles.container, backgroundColor: '#FFF'}}>
+            ? <View style={{...styles.container}}>
                 <Text>Carregando Feed...</Text>
                 <ActivityIndicator size="large" color="#0000ff" />
               </View>
