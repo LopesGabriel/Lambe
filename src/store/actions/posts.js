@@ -34,12 +34,9 @@ export const addComment = payload => {
             .then(res => {
                 const comments = res.data.comments ||  []
                 comments.push(payload.comment)
-                console.log(comments);
                 axios.patch(`/posts/${payload.id}.json`, { comments })
                     .catch(err => console.error(err))
                     .then(res => {
-                        console.log(`Req status: ${res.status}`)
-                        console.log(res.data);
                         dispatch(fetchPosts())
                     })
             })
