@@ -29,6 +29,7 @@ class Post extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#FFF'
     },
     image: {
         width: Dimensions.get('window').width,

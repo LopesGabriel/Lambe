@@ -1,5 +1,6 @@
-import { SET_POSTS, ADD_COMMENT, CREATING_POST, POST_CREATED } from './actionTypes'
+import { SET_POSTS, CREATING_POST, POST_CREATED } from './actionTypes'
 import { loadingFeed, feedLoaded } from './feed'
+import { setMessage } from './message'
 import axios from 'axios'
 
 export const addPost = post => {
@@ -13,11 +14,21 @@ export const addPost = post => {
                 image: post.image.base64
             }
         })
-            .catch(err => console.error(err))
+            .catch(err => {
+                dispatch(setMessage({
+                    title: 'Falha ao subir imagem!',
+                    text: err.message
+                }))
+            })
             .then(res => {
                 post.image = res.data.imageUrl;
                 axios.post('/posts.json', { ...post })
-                    .catch(err => console.error(err))
+                    .catch(err => {
+                        dispatch(setMessage({
+                            title: 'Falha ao criar o post!',
+                            text: err.message
+                        }))
+                    })
                     .then(res => console.log(res.data))
             })
             .finally(() => {
@@ -30,12 +41,22 @@ export const addPost = post => {
 export const addComment = payload => {
     return dispatch => {
         axios.get(`/posts/${payload.id}.json`)
-            .catch(err => console.error(err))
+            .catch(err => {
+                dispatch(setMessage({
+                    title: 'Erro',
+                    text: err.message
+                }))
+            })
             .then(res => {
                 const comments = res.data.comments ||  []
                 comments.push(payload.comment)
                 axios.patch(`/posts/${payload.id}.json`, { comments })
-                    .catch(err => console.error(err))
+                    .catch(err => {
+                        dispatch(setMessage({
+                            title: 'Falha ao incluir comentário!',
+                            text: err.message
+                        }))
+                    })
                     .then(res => {
                         dispatch(fetchPosts())
                     })
@@ -58,7 +79,12 @@ export const fetchPosts = () => {
     return dispatch => {
         dispatch(loadingFeed())
         axios.get('/posts.json')
-            .catch(err => console.error(err))
+            .catch(err => {
+                dispatch(setMessage({
+                    title: 'Falha ao buscar posts!',
+                    text: err.message
+                }))
+            })
             .then(res => {
                 const rawPosts = res.data
                 const posts = []

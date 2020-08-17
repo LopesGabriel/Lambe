@@ -1,4 +1,5 @@
 import { USER_LOGGED_IN, USER_LOGGED_OUT, LOADING_USER, USER_LOADED } from './actionTypes'
+import { setMessage } from './message'
 import axios from 'axios'
 
 const authBaseURL = 'https:///www.googleapis.com/identitytoolkit/v3/relyingparty'
@@ -19,21 +20,34 @@ export const logout = () => {
 
 export const createUser = user => {
     return dispatch => {
+        dispatch(loadingUser())
         axios.post(`${authBaseURL}/signupNewUser?key=${API_KEY}`, {
             email: user.email,
             password: user.password,
             returnSecureToken: true
         })
-            .catch(err => console.error(err))
+            .catch(err => {
+                dispatch(setMessage({
+                    title: 'Falha ao registrar',
+                    text: err.message
+                }))
+            })
             .then(res => {
                 if(res.data.localId) {
                     axios.put(`/users/${res.data.localId}.json`, {
                         name: user.name
                     })
-                        .catch(err => console.error(err))
-                        .then(res => {
-                            console.log(res.data)
-                            console.log('Usuário criado com sucesso!')
+                        .catch(err => {
+                            dispatch(setMessage({
+                                title: 'Falha ao salvar dados!',
+                                text: err.message
+                            }))
+                        })
+                        .then(() => {
+                            delete user.password
+                            user.id = res.data.localId
+                            dispatch(userLogged(user))
+                            dispatch(userLoaded())
                         })
                 }
             })
@@ -60,13 +74,23 @@ export const login = user => {
             password: user.password,
             returnSecureToken: true
         })
-            .catch(err => console.error(err))
-            .then(res => {
+            .catch(err => {
+                dispatch(setMessage({
+                    title: 'Falha ao realizar login!',
+                    text: err.message
+                }))
+            })
+            .then((res) => {
                 if(res.data.localId) {
                     axios.get(`/users/${res.data.localId}.json`)
-                        .catch(err => console.error(err))
+                        .catch(err => {
+                            dispatch(setMessage({
+                                title: 'Falha ao buscar usuário!',
+                                text: err.message
+                            }))
+                        })
                         .then(res => {
-                            user.password = null
+                            delete user.password
                             user.name = res.data.name
                             dispatch(userLogged(user))
                             dispatch(userLoaded())

@@ -4,7 +4,8 @@ import {
     Text,
     StyleSheet,
     TouchableOpacity,
-    TextInput
+    TextInput,
+    ActivityIndicator
 } from 'react-native'
 import { connect } from 'react-redux'
 import { createUser } from '../store/actions/user'
@@ -14,6 +15,17 @@ class Register extends Component {
         name: '',
         email: '',
         password: ''
+    }
+
+    componentDidUpdate = prevProps => {
+        if(prevProps.isLoading && !this.props.isLoading) {
+            this.setState({
+                name: '',
+                email: '',
+                password: ''
+            })
+            this.props.navigation.navigate('Feed')
+        }
     }
 
     render() {
@@ -30,8 +42,10 @@ class Register extends Component {
                     onChangeText={password => this.setState({ password })} />
                 <TouchableOpacity
                     onPress={() => this.props.onCreateUser(this.state) }
-                    style={styles.buttom}>
-                    <Text style={styles.buttomText}>Salvar</Text>
+                    style={[styles.buttom, this.props.isLoading ? styles.buttomDisabled : null]} disabled={this.props.isLoading}>
+                        {this.props.isLoading 
+                        ? <ActivityIndicator size="large" color="#0000ff" />
+                        : <Text style={styles.buttomText}>Salvar</Text>}
                 </TouchableOpacity>
             </View>
         )
@@ -48,6 +62,9 @@ const styles = StyleSheet.create({
         marginTop: 30,
         padding: 10,
         backgroundColor: '#4286f4'
+    },
+    buttomDisabled: {
+        backgroundColor: '#AAA'
     },
     buttomText: {
         fontSize: 20,
@@ -70,4 +87,10 @@ const mapDispatchToProps = dispatch => {
     }
 }
 
-export default connect(null, mapDispatchToProps)(Register)
+const mapStateToProps = ({ user }) => {
+    return {
+        isLoading: user.isLoading
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Register)
